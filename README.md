@@ -99,9 +99,9 @@ import (
 
 func main() {
 	sitemap, err := sm.Read("path/sitemap.xml")
-    if err != nil {
-        // Обработка ошибки
-    }
+	if err != nil {
+		// Обработка ошибки
+	}
 
 	sitemap.Upsert(sm.Url{
 		Loc:        "http://example.com",
@@ -114,6 +114,7 @@ func main() {
 		fmt.Println("Error: ", err)
 	}
 }
+
 ```
 
 ## Тестирование
