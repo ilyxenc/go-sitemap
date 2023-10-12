@@ -206,7 +206,7 @@ func TestSitemapBuilder_End(t *testing.T) {
 				filePath: tmpFile.Name(),
 			},
 			wantErr: false,
-			expectedContent: `
+			expectedContent: `<?xml version="1.0" encoding="UTF-8"?>
 				<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 					<url>
 						<loc>https://example.com</loc>
@@ -242,8 +242,9 @@ func TestSitemapBuilder_End(t *testing.T) {
 			args: args{
 				filePath: tmpFile.Name(),
 			},
-			wantErr:         false,
-			expectedContent: `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"></urlset>`,
+			wantErr: false,
+			expectedContent: `<?xml version="1.0" encoding="UTF-8"?>
+				<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"></urlset>`,
 		},
 	}
 	for _, tt := range tests {

@@ -19,13 +19,13 @@ func NewSitemap() *SitemapBuilder {
 func Read(filePath string) (*SitemapBuilder, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("error reading the sitemap file: %v", err)
+		return nil, fmt.Errorf("error reading the sitemap file: %w", err)
 	}
 
 	var urlset UrlSet
 	err = xml.Unmarshal(data, &urlset)
 	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling the urlset: %v", err)
+		return nil, fmt.Errorf("error unmarshalling the urlset: %w", err)
 	}
 
 	builder := NewSitemap()
@@ -46,26 +46,28 @@ func (sb *SitemapBuilder) Upsert(url Url) {
 }
 
 func (sb *SitemapBuilder) End(filePath string) error {
-	urls := make([]Url, 0, len(sb.urlsMap))
-	for _, url := range sb.urlsMap {
-		urls = append(urls, url)
-	}
-
 	urlset := UrlSet{
 		Xmlns:        Xmlns,
 		XmlnsXsi:     XmlnsXsi,
 		XsiSchemaLoc: XsiSchemaLoc,
-		Urls:         urls,
+		Urls:         make([]Url, 0, len(sb.urlsMap)),
+	}
+
+	for _, url := range sb.urlsMap {
+		urlset.Urls = append(urlset.Urls, url)
 	}
 
 	xmlBytes, err := xml.MarshalIndent(urlset, "", "    ")
 	if err != nil {
-		return fmt.Errorf("error marshalling the urlset: %v", err)
+		return fmt.Errorf("error marshalling the urlset: %w", err)
 	}
+
+	xmlHeader := []byte(xml.Header)
+	xmlBytes = append(xmlHeader, xmlBytes...)
 
 	err = os.WriteFile(filePath, xmlBytes, 0644)
 	if err != nil {
-		return fmt.Errorf("error writing to the sitemap file: %v", err)
+		return fmt.Errorf("error writing to the sitemap file: %w", err)
 	}
 
 	return nil
