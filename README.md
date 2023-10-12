@@ -111,7 +111,7 @@ func main() {
 	})
 
 	if err := sitemap.End("path/sitemap.xml"); err != nil {
-		fmt.Println("Error: ", err)
+		// Обработка ошибки
 	}
 }
 
