@@ -8,15 +8,22 @@ import (
 	"time"
 )
 
+// TestNewSitemap выполняет юнит-тестирование функции NewSitemap, которая создает новый
+// экземпляр SitemapBuilder. Тест проверяет, что функция корректно создает и возвращает
+// новый пустой экземпляр SitemapBuilder. Сценарий тестирования определен в структуре tests.
 func TestNewSitemap(t *testing.T) {
+	// Определение структуры для тестовых данных, включая поле want
 	tests := []struct {
 		name string
 		want *SitemapBuilder
 	}{
 		{name: "Valid Sitemap Creation", want: &SitemapBuilder{urlsMap: make(map[string]Url)}},
 	}
+
+	// Выполнение цикла по всем сценариям тестирования
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Вызов функции NewSitemap и проверка возврата ожидаемого результата
 			if got := NewSitemap(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewSitemap() = %v, want %v", got, tt.want)
 			}
@@ -24,7 +31,14 @@ func TestNewSitemap(t *testing.T) {
 	}
 }
 
+// TestRead выполняет юнит-тестирование функции Read, которая читает файл sitemap
+// и возвращает экземпляр SitemapBuilder, заполненный данными из файла.
+// Тест проверяет следующие сценарии:
+// 1. Правильное чтение существующего файла
+// 2. Обработка несуществующего файла.
+// Каждый сценарий тестирования определен в структуре tests.
 func TestRead(t *testing.T) {
+	// Определение структуры для тестовых данных, включая поля fields и args
 	type args struct {
 		filePath string
 	}
@@ -53,8 +67,11 @@ func TestRead(t *testing.T) {
 			wantErr: true,
 		},
 	}
+
+	// Выполнение цикла по всем сценариям тестирования
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Вызов функции Read и проверка возврата ожидаемого результата и ошибки (при наличии)
 			got, err := Read(tt.args.filePath)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Read() error = %v, wantErr %v", err, tt.wantErr)
@@ -67,7 +84,12 @@ func TestRead(t *testing.T) {
 	}
 }
 
+// TestSitemapBuilder_Get выполняет юнит-тестирование метода Get структуры SitemapBuilder.
+// Тест проверяет, что метод правильно возвращает URL по его локации и корректно
+// указывает наличие или отсутствие URL в URLs структуры SitemapBuilder.
+// Каждый сценарий тестирования определен в структуре tests.
 func TestSitemapBuilder_Get(t *testing.T) {
+	// Определение структуры для тестовых данных, включая поля fields и args
 	type fields struct {
 		urlsMap map[string]Url
 	}
@@ -110,23 +132,32 @@ func TestSitemapBuilder_Get(t *testing.T) {
 			exist: false,
 		},
 	}
+
+	// Выполнение цикла по всем сценариям тестирования
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Создание экземпляра SitemapBuilder с заданными данными
 			sb := &SitemapBuilder{
 				urlsMap: tt.fields.urlsMap,
 			}
+
+			// Вызов метода Get и проверка, что URL и наличие/отсутствие URL корректно возвращаются
 			got, exist := sb.Get(tt.args.loc)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("SitemapBuilder.Get() got = %v, want %v", got, tt.want)
 			}
 			if exist != tt.exist {
-				t.Errorf("SitemapBuilder.Get() got1 = %v, want %v", exist, tt.exist)
+				t.Errorf("SitemapBuilder.Get() exist = %v, want %v", exist, tt.exist)
 			}
 		})
 	}
 }
 
+// TestSitemapBuilder_Upsert выполняет юнит-тестирование метода Upsert структуры SitemapBuilder.
+// Тест проверяет, что метод правильно вставляет новый URL в URLs структуры SitemapBuilder.
+// Каждый сценарий тестирования определен в структуре tests.
 func TestSitemapBuilder_Upsert(t *testing.T) {
+	// Определение структуры для тестовых данных, включая поля fields и args
 	type fields struct {
 		urlsMap map[string]Url
 	}
@@ -156,11 +187,16 @@ func TestSitemapBuilder_Upsert(t *testing.T) {
 			},
 		},
 	}
+
+	// Выполнение цикла по всем сценариям тестирования
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Создание экземпляра SitemapBuilder с заданными данными
 			sb := &SitemapBuilder{
 				urlsMap: tt.fields.urlsMap,
 			}
+
+			// Вызов метода Upsert и проверка правильности вставки URL в URLs
 			sb.Upsert(tt.args.url)
 
 			if !reflect.DeepEqual(sb.urlsMap, tt.want) {
@@ -170,7 +206,14 @@ func TestSitemapBuilder_Upsert(t *testing.T) {
 	}
 }
 
+// TestSitemapBuilder_End выполняет юнит-тестирование метода End структуры SitemapBuilder.
+// Тест проверяет, что метод правильно сохраняет Sitemap в XML-файл и обрабатывает следующие сценарии:
+// 1. Правильные данные.
+// 2. Некорректные пути к файлам.
+// 3. Пустой набор URL
+// Каждый сценарий тестирования определен в структуре tests.
 func TestSitemapBuilder_End(t *testing.T) {
+	// Создание временного файла для сохранения Sitemap и удаление его после завершения теста
 	tmpFile, err := os.CreateTemp("./testdata", "sitemap-*.xml")
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
@@ -178,6 +221,7 @@ func TestSitemapBuilder_End(t *testing.T) {
 	defer tmpFile.Close()
 	defer os.Remove(tmpFile.Name())
 
+	// Определение структуры для тестовых данных, включая поля fields и args
 	type fields struct {
 		urlsMap map[string]Url
 	}
@@ -247,26 +291,34 @@ func TestSitemapBuilder_End(t *testing.T) {
 				<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"></urlset>`,
 		},
 	}
+
+	// Выполнение цикла по всем сценариям тестирования
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Создание экземпляра SitemapBuilder с заданными данными
 			sb := &SitemapBuilder{
 				urlsMap: tt.fields.urlsMap,
 			}
+
+			// Вызов метода End и проверка на наличие ошибки, если она ожидается
 			if err := sb.End(tt.args.filePath); (err != nil) != tt.wantErr {
 				t.Errorf("SitemapBuilder.End() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
+			// Проверка, что файл содержит ожидаемые данные, если ошибка не ожидается
 			if !tt.wantErr {
 				content, err := os.ReadFile(tt.args.filePath)
 				if err != nil {
 					t.Fatalf("Failed to read file: %v", err)
 				}
 
+				// Функция cleanWhitespace удаляет лишние пробелы и символы переноса строки
 				cleanWhitespace := func(s string) string {
 					whitespaceRegexp := regexp.MustCompile(`\s+`)
 					return whitespaceRegexp.ReplaceAllString(s, "")
 				}
 
+				// Сравнение содержимого файла с ожидаемыми данными
 				if cleanWhitespace(string(content)) != cleanWhitespace(tt.expectedContent) {
 					t.Errorf("File content does not match expected. Got:\n%s\nWant:\n%s", content, tt.expectedContent)
 				}
