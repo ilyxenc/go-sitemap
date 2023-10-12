@@ -14,6 +14,7 @@
 - **Read**: считывает файл карты сайта из указанного пути и возвращает экземпляр `SitemapBuilder`.
 - **Get**: возвращает URL по указанному местоположению (loc).
 - **Upsert**: обновляет или добавляет URL в `urlsMap`.
+- **Delete**: удаляет URL в `urlsMap`.
 - **End**: завершает создание карты сайта и записывает ее в указанный файл.
 
 ## Использование
@@ -36,7 +37,7 @@ if err != nil {
 Чтение данных ссылки:
 
 ```go
-url, exists := sitemap.Get("http://example.com")
+url, exists := sitemap.Get("https://example.com")
 if exists {
     // Действия при наличии
 }
@@ -45,7 +46,12 @@ if exists {
 Обновление или добавление новой ссылки:
 
 ```go
-sitemap.Upsert(sm.Url{Loc: "http://example.com"})
+sitemap.Upsert(sm.Url{Loc: "https://example.com"})
+```
+
+Удаляет ссылку:
+```go
+sitemap.Delete("https://example.com")
 ```
 
 Запись данных в sitemap.xml:
@@ -73,7 +79,7 @@ func main() {
 	sitemap := sm.NewSitemap()
 
 	sitemap.Upsert(sm.Url{
-		Loc:        "http://example.com",
+		Loc:        "https://example.com",
 		LastMod:    time.Now(),
 		ChangeFreq: "daily",
 		Priority:   1,
@@ -104,7 +110,7 @@ func main() {
 	}
 
 	sitemap.Upsert(sm.Url{
-		Loc:        "http://example.com",
+		Loc:        "https://example.com",
 		LastMod:    time.Now(),
 		ChangeFreq: "monthly",
 		Priority:   0.8,

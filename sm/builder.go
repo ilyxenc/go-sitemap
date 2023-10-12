@@ -53,6 +53,16 @@ func (sb *SitemapBuilder) Upsert(url Url) {
 	sb.urlsMap[url.Loc] = url
 }
 
+// Delete удаляет URL из sitemap по указанному местоположению (loc). 
+func (sb *SitemapBuilder) Delete(loc string) bool {
+	// Если URL успешно удален, функция возвращает true; в противном случае - false.
+	if _, exists := sb.urlsMap[loc]; exists {
+		delete(sb.urlsMap, loc)
+		return true
+	}
+	return false
+}
+
 // End завершает создание карты сайта и записывает ее в указанный файл.
 func (sb *SitemapBuilder) End(filePath string) error {
 	// Создание нового экземпляра UrlSet с необходимыми значениями из констант и объекта SitemapBuilder

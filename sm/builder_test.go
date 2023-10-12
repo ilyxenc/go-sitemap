@@ -206,6 +206,75 @@ func TestSitemapBuilder_Upsert(t *testing.T) {
 	}
 }
 
+// TestSitemapBuilder_Delete выполняет юнит-тестирование метода Delete структуры SitemapBuilder.
+// Тест проверяет, что метод правильно удаляет URL из URLs структуры SitemapBuilder и
+// возвращает true, если URL существовал и был успешно удален, или false, если URL не существовал.
+// Каждый сценарий тестирования определен в структуре tests.
+func TestSitemapBuilder_Delete(t *testing.T) {
+	// Создание временного файла для сохранения Sitemap и удаление его после завершения теста
+	type fields struct {
+		urlsMap map[string]Url
+	}
+	type args struct {
+		loc string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   bool
+	}{
+		{
+			name: "Удаление существующего URL",
+			fields: fields{
+				urlsMap: map[string]Url{
+					"https://example.com": {Loc: "https://example.com"},
+				},
+			},
+			args: args{
+				loc: "https://example.com",
+			},
+			want: true,
+		},
+		{
+			name: "Попытка удаления несуществующего URL",
+			fields: fields{
+				urlsMap: map[string]Url{
+					"https://example.com": {Loc: "https://example.com"},
+				},
+			},
+			args: args{
+				loc: "https://nonexistent.com",
+			},
+			want: false,
+		},
+		{
+			name: "Удаление URL из пустой карты",
+			fields: fields{
+				urlsMap: map[string]Url{},
+			},
+			args: args{
+				loc: "https://example.com",
+			},
+			want: false,
+		},
+	}
+	// Выполнение цикла по всем сценариям тестирования
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Создание экземпляра SitemapBuilder с заданными данными
+			sb := &SitemapBuilder{
+				urlsMap: tt.fields.urlsMap,
+			}
+			
+			// Вызов метода Delete и проверка на возвращение ожидаемого результата
+			if got := sb.Delete(tt.args.loc); got != tt.want {
+				t.Errorf("SitemapBuilder.Delete() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 // TestSitemapBuilder_End выполняет юнит-тестирование метода End структуры SitemapBuilder.
 // Тест проверяет, что метод правильно сохраняет Sitemap в XML-файл и обрабатывает следующие сценарии:
 // 1. Правильные данные.
