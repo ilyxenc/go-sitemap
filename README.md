@@ -38,8 +38,8 @@ if err != nil {
 
 ```go
 url, exists := sitemap.Get("https://example.com")
-if exists {
-    // Действия при наличии
+if !exists {
+    // Действия при отсутствии
 }
 ```
 
@@ -49,9 +49,12 @@ if exists {
 sitemap.Upsert(sm.Url{Loc: "https://example.com"})
 ```
 
-Удаляет ссылку:
+Удаление ссылки:
 ```go
-sitemap.Delete("https://example.com")
+ok := sitemap.Delete("https://example.com")
+if !ok {
+    // Действия при ошибке удаления
+}
 ```
 
 Запись данных в sitemap.xml:
