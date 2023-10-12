@@ -18,37 +18,101 @@
 
 ## Использование
 
-Для создания новой карты сайта:
+Создание нового экземляра sitemap:
 
 ```go
-builder := sm.NewSitemap()
+sitemap := sm.NewSitemap()
+```
 
-builder.Upsert(sm.Url{Loc: "http://example.com"})
+Чтение файла sitemap.xml:
 
-err := builder.End("path/to/output.xml")
+```go
+sitemap, err := sm.Read("path/sitemap.xml")
 if err != nil {
     // Обработка ошибки
 }
 ```
 
-Для чтения и редактирования существующей карты сайта:
+Чтение данных ссылки:
 
 ```go
-builder, err := sm.Read("path/to/input.xml")
-if err != nil {
-    // Обработка ошибки
-}
-
-builder.Upsert(sm.Url{Loc: "http://example.com"})
-
-url, exists := builder.Get("http://example.com")
+url, exists := sitemap.Get("http://example.com")
 if exists {
     // Действия при наличии
 }
+```
 
-err = builder.End("path/to/output.xml")
+Обновление или добавление новой ссылки:
+
+```go
+sitemap.Upsert(sm.Url{Loc: "http://example.com"})
+```
+
+Запись данных в sitemap.xml:
+
+```go
+err := builder.End("path/sitemap.xml")
 if err != nil {
     // Обработка ошибки
+}
+```
+
+### Пример создания новой sitemap:
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/ilyxenc/go-sitemap/sm"
+)
+
+func main() {
+	sitemap := sm.NewSitemap()
+
+	sitemap.Upsert(sm.Url{
+		Loc:        "http://example.com",
+		LastMod:    time.Now(),
+		ChangeFreq: "daily",
+		Priority:   1,
+	})
+
+	if err := sitemap.End("path/sitemap.xml"); err != nil {
+		fmt.Println("Error: ", err)
+	}
+}
+```
+
+### Пример чтения и редактирования sitemap:
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/ilyxenc/go-sitemap/sm"
+)
+
+func main() {
+	sitemap, err := sm.Read("path/sitemap.xml")
+    if err != nil {
+        // Обработка ошибки
+    }
+
+	sitemap.Upsert(sm.Url{
+		Loc:        "http://example.com",
+		LastMod:    time.Now(),
+		ChangeFreq: "monthly",
+		Priority:   0.8,
+	})
+
+	if err := sitemap.End("path/sitemap.xml"); err != nil {
+		fmt.Println("Error: ", err)
+	}
 }
 ```
 
